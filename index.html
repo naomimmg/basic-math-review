@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arithmetic Diagnostic Quiz</title>
+<meta name="description" content="A self-check quiz on the basic math used in introductory statistics: signed numbers, order of operations, fractions and percentages, solving for x, and summation notation.">
+<style>
+:root{
+  --bg:#f6f5f1; --surface:#ffffff; --surface-2:#f0eee8; --ink:#1d2129; --ink-2:#4b5260; --ink-3:#7a8190;
+  --line:#dedad0; --grid:#ebe8e0; --accent:#3c8dbc; --accent-ink:#ffffff;
+  --ok:#00785A; --ok-bg:#E3F4EE; --bad:#B34700; --bad-bg:#FBE9DD; --warn:#4b5260;
+  --shadow:0 1px 2px rgba(20,20,30,.05),0 4px 16px rgba(20,20,30,.04);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161b; --surface:#1c1f26; --surface-2:#242832; --ink:#eceef2; --ink-2:#b6bcc8; --ink-3:#8a91a0;
+    --line:#2f343f; --grid:#262a33; --accent:#3c8dbc; --accent-ink:#ffffff;
+    --ok:#4FD1A5; --ok-bg:#15302A; --bad:#F5A25D; --bad-bg:#3A2716; --warn:#b6bcc8; --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14161b; --surface:#1c1f26; --surface-2:#242832; --ink:#eceef2; --ink-2:#b6bcc8; --ink-3:#8a91a0;
+  --line:#2f343f; --grid:#262a33; --accent:#3c8dbc; --accent-ink:#ffffff;
+  --ok:#4FD1A5; --ok-bg:#15302A; --bad:#F5A25D; --bad-bg:#3A2716; --warn:#b6bcc8; --shadow:none;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:28px 16px 56px}
+header h1{font-size:clamp(1.7rem,4vw,2.4rem);line-height:1.15;margin:0;letter-spacing:-.01em}
+.tabs{display:flex;gap:4px;margin:20px 0 0;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{font:inherit;font-size:.98rem;font-weight:600;color:var(--ink-3);background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px 9px;cursor:pointer;white-space:nowrap;min-height:44px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tabs button:hover{color:var(--ink)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tabpanel{padding-top:18px}
+.tabpanel[hidden]{display:none}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+.grid.one{grid-template-columns:minmax(0,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+.card h2{font-size:1rem;margin:0;padding:12px 16px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+.card .body{padding:4px 16px 8px}
+.card .body > p{margin:12px 0 4px;color:var(--ink-2)}
+.q{padding:14px 0;border-bottom:1px solid var(--grid)}
+.q:last-child{border-bottom:0}
+.q label{display:block;font-weight:600;margin-bottom:8px;font-variant-numeric:tabular-nums}
+.row{display:flex;gap:8px;align-items:center}
+.row input{flex:1 1 auto;min-width:0;font:inherit;font-size:1rem;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);min-height:42px}
+.row input.ok{border-color:var(--ok)}
+.row input.bad{border-color:var(--bad)}
+.row button{flex:0 0 auto;font:inherit;font-size:.93rem;font-weight:600;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);padding:8px 14px;cursor:pointer;min-height:42px}
+.row button:hover{filter:brightness(.95)}
+.fb{margin:8px 0 0;font-size:.93rem;border-radius:8px;padding:0}
+.fb:empty{display:none}
+.fb.ok{color:var(--ok);background:var(--ok-bg);padding:6px 10px;font-weight:700}
+.fb.bad{color:var(--bad);background:var(--bad-bg);padding:6px 10px}
+.fb.bad b{font-weight:700}
+.fb.warn{color:var(--warn);padding:2px 0;font-style:italic}
+footer{margin-top:28px;font-size:.82rem;color:var(--ink-3)}
+@media (max-width:700px){ .grid{grid-template-columns:minmax(0,1fr)} }
+@media (max-width:480px){ .tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:0} .tabs button{padding:6px 2px 7px;display:flex;flex-direction:column;align-items:center;line-height:1.15} .tabs .w{font-size:.72rem;font-weight:600} .tabs .n{font-size:1.05rem} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>Arithmetic Diagnostic Quiz</h1></header>
+
+  <nav class="tabs" role="tablist" aria-label="Quiz sections" id="tabs"></nav>
+  <main id="panels"></main>
+
+  <footer><p>Questions from Nolan, S. A. &amp; Heinzen, T. E. (2012). <i>Statistics for the behavioral sciences</i> (2nd ed.). Worth.</p></footer>
+</div>
+
+<script>
+(function () {
+  // type: 'num' compares numerically; 'frac' accepts any equivalent fraction a/b (spaces ignored)
+  const SECTIONS = [
+    { tab: 'Section 1', cards: [
+      { title: 'Symbols and Notation', qs: [
+        ['s1q1', '8 + 2 + 14 + 4 =', 28, 'Just add them up!'],
+        ['s1q2', '4 × (-6) =', -24, 'A positive times a negative is a negative.'],
+        ['s1q3', '22 - (-4) + 3 =', 29, 'Subtracting a negative is adding: 22 + 4 + 3.'],
+        ['s1q4', '8 × 6 =', 48, '8 x 6 = 48.'],
+        ['s1q5', '36 ÷ (-9) =', -4, '36 / -9 = -4.'] ] },
+      { title: 'Symbols and Notation (cont.)', qs: [
+        ['s1q6', '13 + (-2) + 8 =', 19, '13 - 2 + 8 = 11 + 8 = 19.'],
+        ['s1q7', '44 ÷ 11 =', 4, '44 / 11 = 4.'],
+        ['s1q8', '-6(-3) =', 18, 'Two negatives make a positive.'],
+        ['s1q9', '-6 - 8 =', -14, '-6 - 8 = -14.'],
+        ['s1q10', '-14 / -2 =', 7, '-14 / -2 = 7.'] ] } ] },
+    { tab: 'Section 2', cards: [
+      { title: 'Order of Operations (BEDMAS)', qs: [
+        ['s2q1', '3 × (6 + 4) - 30 =', 0, '3 * (10) - 30 = 0.'],
+        ['s2q2', '4 + 6(2 + 1) + 6 =', 28, '4 + 6(3) + 6 = 28.'],
+        ['s2q3', '(3 - 6) × 2 + 5 =', -1, '(-3) * 2 + 5 = -1.'],
+        ['s2q4', '4 + 6 × 2 =', 16, 'Multiply before adding: 4 + 12 = 16.'],
+        ['s2q5', '16/2 + 6(3 - 1) =', 20, '8 + 6(2) = 20.'] ] },
+      { title: 'Order of Operations (cont.)', qs: [
+        ['s2q6', '2²(12 - 8) =', 16, '4 * (4) = 16.'],
+        ['s2q7', '5 - 3(4 - 1) =', -4, '5 - 9 = -4.'],
+        ['s2q8', '7 × 2 - (9 - 3) × 2 =', 2, '14 - 12 = 2.'],
+        ['s2q9', '15 ÷ 5 + (6 + 2)/2 =', 7, '3 + 4 = 7.'],
+        ['s2q10', '15 - 3² + 5(2) =', 16, '15 - 9 + 10 = 16.'] ] } ] },
+    { tab: 'Section 3', one: true, cards: [
+      { title: 'Proportions, Fractions, & %', qs: [
+        ['s3q1', 'Convert 0.42 into a fraction (e.g., 21/50):', [21, 50], '0.42 is 42/100 or 21/50.', 'frac'],
+        ['s3q2', 'Convert 6/10 into a decimal:', 0.6, '6/10 = 0.6.'],
+        ['s3q3', 'Convert 4/5 into a percentage:', 80, '4/5 = 80%.'],
+        ['s3q4', '6/13 + 4/13 =', [10, 13], '6/13 + 4/13 = 10/13.', 'frac'],
+        ['s3q6', '40% of 120 =', 48, '0.40 * 120 = 48.'] ] } ] },
+    { tab: 'Section 4', one: true, cards: [
+      { title: 'Solving Equations for X', qs: [
+        ['s4q1', '5x - 13 = 7. Solve for x:', 4, '5x = 20, so x = 4.'],
+        ['s4q2', '3(x - 2) = 9. Solve for x:', 5, '3x = 15, x = 5.'],
+        ['s4q3', 'x/3 + 2 = 10. Solve for x:', 24, 'x/3 = 8, so x = 24.'],
+        ['s4q9', '4x - 5 = 19. Solve for x:', 6, '4x = 24, so x = 6.'] ] } ] },
+    { tab: 'Section 5', cards: [
+      { title: 'Understanding Summation (Σ)', html: '<p><strong>Σ = sum of values</strong><br>Example: Σx = 3 + 6 + 1 = 10</p>', qs: [] },
+      { title: 'Summation Practice', html: '<p>Use the scores (x): <strong>3, 5, 7, 9</strong></p>', qs: [
+        ['s5q1', 'Compute Σx:', 24, 'Add all scores: 3 + 5 + 7 + 9 = 24.'],
+        ['s5q2', 'Compute Σx²:', 164, 'Square each score first: 9 + 25 + 49 + 81 = 164.'] ] } ] },
+  ];
+
+  // ---------- answer checking ----------
+  const clean = s => s.replace(/[−–—]/g, '-').replace(/\s+/g, '');
+  function parseNum(s) {
+    s = clean(s).replace(/%$/, '');
+    if (!/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s)) return null;
+    return Number(s);
+  }
+  function check(raw, key, type) {
+    const s = clean(raw);
+    if (!s) return 'empty';
+    if (type === 'frac') {
+      const m = s.match(/^([-+]?\d+)\/([-+]?\d+)$/);
+      if (!m || +m[2] === 0) return false;
+      return +m[1] * key[1] === +m[2] * key[0];      // equivalent fraction, e.g. 42/100 = 21/50
+    }
+    const v = parseNum(s);
+    if (v === null) return 'nan';
+    return Math.abs(v - key) < 1e-9;
+  }
+
+  // ---------- build page ----------
+  const tabs = document.getElementById('tabs'), panels = document.getElementById('panels');
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  SECTIONS.forEach((sec, i) => {
+    const id = 'section' + (i + 1);
+    const b = document.createElement('button');
+    b.role = 'tab'; b.setAttribute('role', 'tab'); b.id = 'tab-' + id; b.setAttribute('aria-controls', id);
+    b.innerHTML = sec.tab.replace(/^(\w+) (\d+)$/, '<span class="w">$1</span> <span class="n">$2</span>'); tabs.appendChild(b);
+    const p = document.createElement('section');
+    p.className = 'tabpanel'; p.id = id; p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    p.innerHTML = `<div class="grid${sec.one ? ' one' : ''}">` + sec.cards.map(c => `
+      <div class="card"><h2>${esc(c.title)}</h2><div class="body">${c.html || ''}${c.qs.map(([qid, text]) => `
+        <div class="q">
+          <label for="${qid}">${esc(text)}</label>
+          <div class="row"><input id="${qid}" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="fb_${qid}">
+          <button type="button" data-q="${qid}">Submit</button></div>
+          <p class="fb" id="fb_${qid}" aria-live="polite"></p>
+        </div>`).join('')}</div></div>`).join('') + '</div>';
+    panels.appendChild(p);
+  });
+
+  const Q = {};
+  SECTIONS.forEach(s => s.cards.forEach(c => c.qs.forEach(([id, , key, hint, type]) => { Q[id] = { key, hint, type: type || 'num' }; })));
+
+  function submit(id) {
+    const q = Q[id], input = document.getElementById(id), fb = document.getElementById('fb_' + id);
+    const r = check(input.value, q.key, q.type);
+    input.classList.remove('ok', 'bad'); fb.className = 'fb';
+    if (r === 'empty') { fb.classList.add('warn'); fb.textContent = 'Please enter an answer before submitting.'; return; }
+    if (r === 'nan') { fb.classList.add('warn'); fb.textContent = 'Please enter a number.'; return; }
+    if (r) { input.classList.add('ok'); fb.classList.add('ok'); fb.textContent = '✔ Correct!'; }
+    else { input.classList.add('bad'); fb.classList.add('bad'); fb.innerHTML = '<b>✘ Incorrect.</b> ' + esc(q.hint); }
+  }
+  panels.addEventListener('click', e => { const b = e.target.closest('button[data-q]'); if (b) submit(b.dataset.q); });
+  panels.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches('input')) { e.preventDefault(); submit(e.target.id); } });
+
+  // ---------- tabs ----------
+  const tabBtns = [...tabs.querySelectorAll('[role=tab]')];
+  function select(btn, focus) {
+    tabBtns.forEach(t => {
+      const on = t === btn;
+      t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+    if (focus) btn.focus();
+    if (history.replaceState) history.replaceState(null, '', '#' + btn.getAttribute('aria-controls'));
+  }
+  tabBtns.forEach((t, i) => {
+    t.addEventListener('click', () => select(t));
+    t.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        select(tabBtns[(i + (e.key === 'ArrowRight' ? 1 : tabBtns.length - 1)) % tabBtns.length], true);
+      }
+    });
+  });
+  select(tabBtns.find(t => '#' + t.getAttribute('aria-controls') === location.hash) || tabBtns[0]);
+})();
+</script>
+</body>
+</html>
